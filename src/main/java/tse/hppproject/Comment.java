@@ -19,7 +19,7 @@ public class Comment {
 	public Comment(String comment) {
 		super();
 		// TODO Auto-generated constructor stub
-		String[] coupe = comment.replace("|", ",").split(",");
+		String[] coupe = comment.replace("|", "zx").split("zx");
 		this.ts = Timestamp.valueOf(coupe[0].replace("T", " ").substring(0, coupe[0].indexOf(".")));
 		this.id_comment = Integer.parseInt(coupe[1]);
 		this.id_post = coupe[6].equals("")?0:Integer.parseInt(coupe[6]);
