@@ -21,6 +21,12 @@ public class Post {
 	}
 
 
+	@Override
+	public String toString() {
+		return "Post [ts=" + ts + ", post_id=" + post_id + ", user_id=" + user_id + ", user=" + user + "]";
+	}
+
+
 	public Timestamp getTs() {
 		return ts;
 	}

@@ -4,7 +4,12 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 public class Comment {
-	Integer id;
+	@Override
+	public String toString() {
+		return "Comment [id=" + id_comment + ", id_replied=" + id_replied + ", id_post=" + id_post + ", id_user=" + id_user
+				+ ", ts=" + ts + ", score=" + score + "]";
+	}
+	Integer id_comment;
 	Integer id_replied;
 	Integer id_post;
 	Integer id_user;
@@ -15,20 +20,19 @@ public class Comment {
 		super();
 		// TODO Auto-generated constructor stub
 		String[] coupe = comment.replace("|", ",").split(",");
-		coupe[0] = coupe[0].replace("T", " ").substring(0, coupe[0].indexOf(".")+1);
-		this.ts = Timestamp.valueOf(coupe[0]);
-		this.id = Integer.parseInt(coupe[1]);
+		this.ts = Timestamp.valueOf(coupe[0].replace("T", " ").substring(0, coupe[0].indexOf(".")));
+		this.id_comment = Integer.parseInt(coupe[1]);
 		this.id_post = Integer.parseInt(coupe[6]);
-		this.id_replied = Integer.parseInt(coupe[5]);
+		this.id_replied=coupe[5].equals("")?0:Integer.parseInt(coupe[5]);
 		this.id_user = Integer.parseInt(coupe[2]);
 		this.score = 10;
 	}
 	
 	public Integer getId() {
-		return id;
+		return id_comment;
 	}
 	public void setId(Integer id) {
-		this.id = id;
+		this.id_comment = id;
 	}
 	public Integer getId_replied() {
 		return id_replied;

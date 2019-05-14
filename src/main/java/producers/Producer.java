@@ -4,22 +4,23 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Queue;
 
 public class Producer {
-	private List<String> liste = null;
+	private Queue<String> liste = null;
 	private String file = null;
 
-	public Producer(List<String> liste, String file) {
+	public Producer(Queue<String> liste, String file) {
 		super();
 		this.liste = liste;
 		this.file = file;
 	}
 
-	public List<String> getListe() {
+	public Queue<String> getListe() {
 		return liste;
 	}
 
-	public void setListe(List<String> liste) {
+	public void setListe(Queue<String> liste) {
 		this.liste = liste;
 	}
 
