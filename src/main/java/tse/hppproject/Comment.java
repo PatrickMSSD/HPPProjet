@@ -22,7 +22,7 @@ public class Comment {
 		String[] coupe = comment.replace("|", "zx").split("zx");
 		this.ts = Timestamp.valueOf(coupe[0].replace("T", " ").substring(0, coupe[0].indexOf(".")));
 		this.id_comment = Integer.parseInt(coupe[1]);
-		this.id_post = coupe[6].equals("")?0:Integer.parseInt(coupe[6]);
+		this.id_post = (coupe.length == 7 ) ? Integer.parseInt(coupe[6]) : 0;
 		this.id_replied=coupe[5].equals("")?0:Integer.parseInt(coupe[5]);
 		this.id_user = Integer.parseInt(coupe[2]);
 		this.score = 10;
