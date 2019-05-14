@@ -28,6 +28,22 @@ public class Comment {
 		this.score = 10;
 	}
 	
+	public Integer getId_comment() {
+		return id_comment;
+	}
+
+	public void setId_comment(Integer id_comment) {
+		this.id_comment = id_comment;
+	}
+
+	public Timestamp getTs() {
+		return ts;
+	}
+
+	public void setTs(Timestamp ts) {
+		this.ts = ts;
+	}
+
 	public Integer getId() {
 		return id_comment;
 	}

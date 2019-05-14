@@ -8,6 +8,7 @@ public class Post {
 	Integer post_id;
 	Integer user_id;
 	String user;
+	Integer score =10;
 	
 	
 	public Post(String str) {
