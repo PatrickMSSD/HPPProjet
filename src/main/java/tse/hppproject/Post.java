@@ -14,14 +14,14 @@ public class Post {
 	
 	
 	public void change_total_score(ArrayList<Comment> comment_list) {
-		this.score_total+=this.score;
+		this.score_total=this.score;
 		for(int i=0;i<comment_list.size();i++) {
 			this.score_total+=comment_list.get(i).score;
 		}
 	}
 	
 	public void change_score(Timestamp actual_time) {
-		this.score=actual_time.compareTo(this.ts)<-10?0:10+actual_time.compareTo(this.ts);
+		this.score=actual_time.compareTo(this.ts)<-10?0:10-actual_time.compareTo(this.ts);
 	}
 	
 	public Integer getScore_total() {
@@ -68,11 +68,14 @@ public class Post {
 	}
 
 
+
+
+
 	@Override
 	public String toString() {
-		return "Post [ts=" + ts + ", post_id=" + post_id + ", user_id=" + user_id + ", user=" + user + "]";
+		return "Post [ts=" + ts + ", post_id=" + post_id + ", user_id=" + user_id + ", user=" + user + ", score="
+				+ score + ", score_total=" + score_total + ", comment_list=" + comment_list + "]";
 	}
-
 
 	public Timestamp getTs() {
 		return ts;
