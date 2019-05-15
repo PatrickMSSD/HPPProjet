@@ -13,7 +13,7 @@ public class Post {
 	
 	public Post(String str) {
 		super();
-		String[] string = str.replace("|", ",").split(",");
+		String[] string = str.split("[|]");
 		this.ts=Timestamp.valueOf(string[0].substring(0,string[0].indexOf(".")).replaceAll("T", " "));
 		this.post_id=Integer.parseInt(string[1]);
 		this.user_id=Integer.parseInt(string[2]);
