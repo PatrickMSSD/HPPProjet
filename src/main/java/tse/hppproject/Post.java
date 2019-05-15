@@ -13,6 +13,12 @@ public class Post {
 	Integer score_total =0;
 	
 	
+	public void change_total_score(ArrayList<Comment> comment_list) {
+		this.score_total+=this.score;
+		for(int i=0;i<comment_list.size();i++) {
+			this.score_total+=comment_list.get(i).score;
+		}
+	}
 	
 	public void change_score(Timestamp actual_time) {
 		this.score=actual_time.compareTo(this.ts)<-10?0:10+actual_time.compareTo(this.ts);
