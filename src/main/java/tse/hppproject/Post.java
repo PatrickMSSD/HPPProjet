@@ -1,6 +1,7 @@
 package tse.hppproject;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class Post {
 	
@@ -9,8 +10,29 @@ public class Post {
 	Integer user_id;
 	String user;
 	Integer score =10;
+	ArrayList<Comment> comment_list = new ArrayList<Comment>();
 	
 	
+	public Integer getScore() {
+		return score;
+	}
+
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+
+
+	public ArrayList<Comment> getComment_list() {
+		return comment_list;
+	}
+
+
+	public void setComment_list(ArrayList<Comment> comment_list) {
+		this.comment_list = comment_list;
+	}
+
+
 	public Post(String str) {
 		super();
 		String[] string = str.split("[|]");

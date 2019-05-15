@@ -18,8 +18,8 @@ public class my_project {
 		BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(110);
 		BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(110);
 		
-		Producer prod_post = new Producer(post_queue,"C:\\Users\\kenza\\git\\HPPProjet\\resourses\\posts.dat");
-		Producer prod_comm = new Producer(comm_queue,"C:\\Users\\kenza\\git\\HPPProjet\\resourses\\comments.dat");
+		Producer prod_post = new Producer(post_queue,"../HPPProjet/resourses/posts.dat");
+		Producer prod_comm = new Producer(comm_queue,"../HPPProjet/resourses/comments.dat");
 		
 		
 		prod_post.readFile(50);
@@ -29,7 +29,7 @@ public class my_project {
 		Post post1 = new Post(post_queue.poll());
 		
 		while(!comm_queue.isEmpty()&& !post_queue.isEmpty()) {
-			
+		
 			if(post1.getTs().before(com1.getTs())) {
 				total_queue.add(post1);
 				total_time=post1.getTs();
