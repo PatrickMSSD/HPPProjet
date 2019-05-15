@@ -68,6 +68,9 @@ public class Comment {
 	public void setId_user(Integer id_user) {
 		this.id_user = id_user;
 	}
+	public void change_score(Timestamp actualTime) {
+		this.score = 10 - actualTime.compareTo(this.ts);
+	}
 
 	
 	
