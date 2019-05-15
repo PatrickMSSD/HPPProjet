@@ -10,6 +10,24 @@ public class Post {
 	Integer user_id;
 	String user;
 	Integer score =10;
+	Integer score_total =0;
+	
+	
+	
+	public void change_score(Timestamp actual_time) {
+		this.score=actual_time.compareTo(this.ts)<-10?0:10+actual_time.compareTo(this.ts);
+	}
+	
+	public Integer getScore_total() {
+		return score_total;
+	}
+
+
+	public void setScore_total(Integer score_total) {
+		this.score_total = score_total;
+	}
+
+
 	ArrayList<Comment> comment_list = new ArrayList<Comment>();
 	
 	
