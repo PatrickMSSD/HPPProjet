@@ -3,13 +3,19 @@ package tse.hppproject;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.function.Consumer;
+
+import javax.management.MXBean;
+
 import producers.Producer;
 
 public class my_project {
@@ -24,31 +30,51 @@ public class my_project {
 
 		Producer prod_post = new Producer(post_queue, "../HPPProjet/resourses/posts.dat");
 		Producer prod_comm = new Producer(comm_queue, "../HPPProjet/resourses/comments.dat");
-
-		prod_post.readFile(50);
-		prod_comm.readFile(50);
-
-		Comment com1 = new Comment(comm_queue.poll());
-		Post post1 = new Post(post_queue.poll());
-
-		while (!comm_queue.isEmpty() && !post_queue.isEmpty()) {
-
-			if (post1.getTs().before(com1.getTs())) {
-				total_queue.add(post1);
-				total_time = post1.getTs();
-				post1 = new Post(post_queue.poll());
-			} else {
-				total_queue.add(com1);
-				total_time = com1.getTs();
-				com1 = new Comment(comm_queue.poll());
-			}
-		}
-
-		// HASH MAP
-
+		
+		ArrayList<Comment> comment_list = new ArrayList<Comment>();
+		ArrayList<Thread> comment_thread_list = new ArrayList<Thread>();
+		ArrayList<Post> post_list = new ArrayList<Post>();
+		ArrayList<Thread> post_thread_list = new ArrayList<Thread>();
+		
 		Map<Integer, ArrayList<Comment>> IDPost2Com = new HashMap<Integer, ArrayList<Comment>>();
 		Map<Integer, Post> ID2Post = new HashMap<Integer, Post>();
 		Map<Integer, Integer> IDCom2IDPost = new HashMap<Integer, Integer>();
+
+		prod_post.readFile(50);
+		prod_comm.readFile(50);
+		
+		Comment com = new Comment(comm_queue.poll(),total_time);
+		comment_list.add(com);
+		Post post= new Post(post_queue.poll(),total_time,IDPost2Com);
+		post_list.add(post);
+		
+		do {
+			
+			if (post.getTs().before(com.getTs())) {
+				total_queue.add(post);
+				total_time = post.getTs();
+				Thread post_thread = new Thread(post);
+				post_thread_list.add(post_thread);
+				post_thread.start();
+				post= new Post(post_queue.poll(),total_time,IDPost2Com);
+				post_list.add(post);
+			} else {
+				total_queue.add(com);
+				total_time = com.getTs();
+				Thread comment_thread = new Thread(com);
+				comment_thread_list.add(comment_thread);
+				comment_thread.start();
+				com = new Comment(comm_queue.poll(),total_time);
+				comment_list.add(com);
+			}
+		}while(!comm_queue.isEmpty() && !post_queue.isEmpty());
+	
+		System.out.println(total_queue.toString());
+		System.out.println(total_time.toString());
+		
+
+		// HASH MAP
+
 		while (!total_queue.isEmpty()) {
 			if (total_queue.peek().getClass().equals(Post.class)) {
 				Post patchPost = (Post) total_queue.take();
@@ -71,11 +97,11 @@ public class my_project {
 
 		for (Integer post_id : ID2Post.keySet()) {
 
-			ID2Post.get(post_id).change_score(total_time);
+			//ID2Post.get(post_id).change_score(total_time);
 			for (int i = 0; i < IDPost2Com.get(post_id).size(); i++) {
-				IDPost2Com.get(post_id).get(i).change_score(total_time);
+				//IDPost2Com.get(post_id).get(i).change_score(total_time);
 			}
-			ID2Post.get(post_id).change_total_score(IDPost2Com.get(post_id));
+			//ID2Post.get(post_id).change_total_score(IDPost2Com.get(post_id));
 
 		}
 		
