@@ -3,7 +3,7 @@ package tse.hppproject;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class Comment implements Runnable {
+public class Comment{
 	@Override
 	public String toString() {
 		return "Comment [id=" + id_comment + ", id_replied=" + id_replied + ", id_post=" + id_post + ", id_user=" + id_user
@@ -74,22 +74,5 @@ public class Comment implements Runnable {
 	}
 	public void change_score() {
 		this.score = 10 + this.actual_time.compareTo(this.ts);
-	}
-
-
-
-	public void run() {
-		// TODO Auto-generated method stub
-		try {
-			this.change_score();
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-
-	
-	
+	}	
 }

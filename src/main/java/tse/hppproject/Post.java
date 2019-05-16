@@ -36,14 +36,6 @@ public class Post implements Runnable{
 		}
 	}
 	
-	public Comment getLastCom() {
-		return lastCom;
-	}
-
-	public void setLastCom(Comment lastCom) {
-		this.lastCom = lastCom;
-	}
-
 	public void change_score() {
 		this.score=this.actual_time.compareTo(this.ts)<-10?0:10+this.actual_time.compareTo(this.ts);
 	}
@@ -82,6 +74,14 @@ public class Post implements Runnable{
 		return ts;
 	}
 
+
+	public Comment getLastCom() {
+		return lastCom;
+	}
+
+	public void setLastCom(Comment lastCom) {
+		this.lastCom = lastCom;
+	}
 
 	public void setTs(Timestamp ts) {
 		this.ts = ts;
