@@ -39,9 +39,11 @@ public class my_project {
 		Map<Integer, ArrayList<Comment>> IDPost2Com = new HashMap<Integer, ArrayList<Comment>>();
 		Map<Integer, Post> ID2Post = new HashMap<Integer, Post>();
 		Map<Integer, Integer> IDCom2IDPost = new HashMap<Integer, Integer>();
-
-		prod_post.readFile(50);
-		prod_comm.readFile(50);
+		
+		Thread prodpost = new Thread(prod_post);
+		prodpost.start();
+		Thread prodcom = new Thread(prod_comm);
+		prodcom.start();
 		
 		Comment com = new Comment(comm_queue.poll(),total_time);
 		comment_list.add(com);
