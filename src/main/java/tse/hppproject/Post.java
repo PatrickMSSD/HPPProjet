@@ -11,8 +11,17 @@ public class Post {
 	String user;
 	Integer score =10;
 	Integer score_total =0;
+	Comment lastCom;
 	
 	
+	public Comment getLastCom() {
+		return lastCom;
+	}
+
+	public void setLastCom(Comment lastCom) {
+		this.lastCom = lastCom;
+	}
+
 	public void change_total_score(ArrayList<Comment> comment_list) {
 		this.score_total=this.score;
 		for(int i=0;i<comment_list.size();i++) {
