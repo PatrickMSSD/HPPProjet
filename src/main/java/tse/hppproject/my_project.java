@@ -95,6 +95,7 @@ public class my_project {
 			}
 		}
 
+		//
 		for (Integer post_id : ID2Post.keySet()) {
 
 			//ID2Post.get(post_id).change_score(total_time);
