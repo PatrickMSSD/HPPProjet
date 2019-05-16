@@ -16,12 +16,6 @@ public class ConsumerQueue2Sort implements Runnable {
 	BlockingQueue<Object> total_queue;
 	List<Post> result;
 
-	public ConsumerQueue2Sort(BlockingQueue<Object> total_queue, List<Post> result) {
-		super();
-		this.total_queue = total_queue;
-		this.result = result;
-	}
-
 	public ConsumerQueue2Sort(Map<Integer, ArrayList<Comment>> iDPost2Com, Map<Integer, Post> iD2Post,
 			Map<Integer, Integer> iDCom2IDPost, BlockingQueue<Object> total_queue, List<Post> result) {
 		super();
@@ -73,7 +67,9 @@ public class ConsumerQueue2Sort implements Runnable {
 	}
 
 	public void run() {
+		System.out.println("HIHI");
 		while (!total_queue.isEmpty()) {
+			System.out.println("HAHA");
 			if (total_queue.peek().getClass().equals(Post.class)) {
 				Post patchPost = null;
 				try {
@@ -103,7 +99,7 @@ public class ConsumerQueue2Sort implements Runnable {
 			}
 		}
 
-		List<Post> result = new ArrayList<Post>(ID2Post.values());
+		result = new ArrayList<Post>(ID2Post.values());
 		Collections.sort(result, new Comparator<Post>() {
 			public int compare(Post p1, Post p2) {
 				if (p2.getScore_total() != p1.getScore_total()) {
