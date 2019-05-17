@@ -27,16 +27,17 @@ public class my_project {
 		BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(110);
 		BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(110);
 		BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(110);
-
+		Boolean producer_end=false;
+		Boolean consumers_end=false;
 		Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/posts.dat","../HPPProjet/resourses/comments.dat");
 		//Producer comm = new Producer(comm_queue,"../HPPProjet/resourses/comments.dat");
 		
 		ArrayList<Comment> comment_list = new ArrayList<Comment>();
 		ArrayList<Post> post_list = new ArrayList<Post>();
 		
-		Map<Integer, ArrayList<Comment>> IDPost2Com = new HashMap<Integer, ArrayList<Comment>>();
-		Map<Integer, Post> ID2Post = new HashMap<Integer, Post>();
-		Map<Integer, Integer> IDCom2IDPost = new HashMap<Integer, Integer>();
+		Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>();
+		Map<Long, Post> ID2Post = new HashMap<Long, Post>();
+		Map<Long, Long> IDCom2IDPost = new HashMap<Long, Long>();
 		
 		List<Post> result = new ArrayList<Post>(ID2Post.values());
 		
@@ -45,9 +46,9 @@ public class my_project {
 		//Thread prodcomm = new Thread(comm);
 		//prodcomm.start();
 		
-		Consumers my_consumers = new Consumers(post_queue, comm_queue, total_queue, total_time, comment_list, post_list, IDPost2Com);
+		Consumers my_consumers = new Consumers(post_queue, comm_queue, total_queue, total_time, comment_list, post_list,producer_end,consumers_end, IDPost2Com);
 		Thread consumers_thread= new Thread(my_consumers);
-		ConsumerQueue2Sort my_consumersQueue = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
+		ConsumerQueue2Sort my_consumersQueue = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result,consumers_end);
 		Thread consumersQueue_thread= new Thread(my_consumersQueue);
 		consumers_thread.start();
 		consumersQueue_thread.start();
