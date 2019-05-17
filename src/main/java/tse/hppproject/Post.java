@@ -15,6 +15,8 @@ public class Post {
 	Integer score =10;
 	Integer score_total =0;
 	Comment lastCom;
+	
+	//utilisation de la table de correspondance post list de commentaire pour compter le score
 	Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>();
 	
 	public Post(String str,Timestamp actual_time,Map<Long, ArrayList<Comment>> IDPost2Com) {
@@ -29,6 +31,7 @@ public class Post {
 		
 	}
 	
+	//calcul le score total d'un post (post + ses commentaires)
 	public void change_total_score() {
 		this.score_total=this.score;
 		for(int i=0;i<this.IDPost2Com.size();i++) {
@@ -36,6 +39,7 @@ public class Post {
 		}
 	}
 	
+	//calcul le score du post (post seulement)
 	public void change_score() {
 		this.score=this.actual_time.compareTo(this.ts)<-10?0:10+this.actual_time.compareTo(this.ts);
 	}
@@ -58,10 +62,6 @@ public class Post {
 	public void setScore(Integer score) {
 		this.score = score;
 	}
-
-
-
-
 
 
 	@Override

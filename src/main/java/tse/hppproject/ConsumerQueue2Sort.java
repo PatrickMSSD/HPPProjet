@@ -117,7 +117,7 @@ public class ConsumerQueue2Sort implements Runnable {
 
 		}
 
-		System.out.println("test ko " +consumers_end);
+		//System.out.println("test ko " +consumers_end);
 		result = new ArrayList<Post>(ID2Post.values());
 		Collections.sort(result, new Comparator<Post>() {
 			public int compare(Post p1, Post p2) {

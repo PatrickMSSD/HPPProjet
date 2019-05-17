@@ -8,19 +8,20 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 public class Producer implements Runnable{
+	
 	private BlockingQueue<String> liste = null;
 	private BlockingQueue<String> liste2 = null;
 	private String file = null;
 	private String file2 = null;
+	private Boolean producer_end;
 
-	
-
-	public Producer(BlockingQueue<String> liste, BlockingQueue<String> liste2, String file, String file2) {
+	public Producer(BlockingQueue<String> liste, BlockingQueue<String> liste2, String file, String file2,Boolean producer_end) {
 		super();
 		this.liste = liste;
 		this.liste2 = liste2;
 		this.file = file;
 		this.file2 = file2;
+		this.producer_end=producer_end;
 	}
 
 	public Queue<String> getListe() {
@@ -31,6 +32,14 @@ public class Producer implements Runnable{
 		this.liste = liste;
 	}
 
+	public Boolean getProducer_end() {
+		return producer_end;
+	}
+
+	public void setProducer_end(Boolean producer_end) {
+		this.producer_end = producer_end;
+	}
+
 	public String getFile() {
 		return file;
 	}
@@ -39,26 +48,29 @@ public class Producer implements Runnable{
 		this.file = file;
 	}
 
+	//lecture des fichiers en alternance
 	public void readFile() throws IOException, InterruptedException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		BufferedReader br2 = new BufferedReader(new FileReader(file2));
-		String line;
-		String line2;
-		/*for (int i = 0 ; i < n ; i ++) {
-			line = br.readLine();
-			this.liste.put(line);
-		}*/
+		String line,line2;
+		
+		
 		while (((line = br.readLine()) != null)||(line2 = br2.readLine()) != null)
 		{
+			if(br.readLine() != null) {
 				line = br.readLine();
 				this.liste.put(line);
-			
-			
+			}
+			if(br2.readLine() != null) {
 				line2 = br2.readLine();
 				this.liste2.put(line2);
+				
+			}
 		}
 		br.close();
 		br2.close();
+		
+		producer_end=true;
 	}
 
 	public void run() {

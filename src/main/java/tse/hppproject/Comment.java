@@ -1,18 +1,13 @@
 package tse.hppproject;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class Comment{
-	@Override
-	public String toString() {
-		return "Comment [id=" + id_comment + ", id_replied=" + id_replied + ", id_post=" + id_post + ", id_user=" + id_user
-				+ ", ts=" + ts + ", score=" + score + "]";
-	}
-	Integer id_comment;
-	Integer id_replied;
-	Integer id_post;
-	Integer id_user;
+	
+	Long id_comment;
+	Long id_replied;
+	Long id_post;
+	Long id_user;
 	Timestamp ts;
 	Timestamp actual_time;
 	Integer score;
@@ -22,21 +17,31 @@ public class Comment{
 		// TODO Auto-generated constructor stub
 		String[] coupe = comment.split("[|]");
 		this.ts = Timestamp.valueOf(coupe[0].replace("T", " ").substring(0, coupe[0].indexOf(".")));
-		this.id_comment = Integer.parseInt(coupe[1]);
-		this.id_post = (coupe.length == 7 ) ? Integer.parseInt(coupe[6]) : 0;
-		this.id_replied=coupe[5].equals("")?0:Integer.parseInt(coupe[5]);
-		this.id_user = Integer.parseInt(coupe[2]);
+		this.id_comment = Long.parseLong(coupe[1]);
+		this.id_post = (coupe.length == 7 ) ? Long.parseLong(coupe[6]) : 0;
+		this.id_replied=coupe[5].equals("")?0:Long.parseLong(coupe[5]);
+		this.id_user = Long.parseLong(coupe[2]);
 		this.score = 10;
 		this.actual_time=actual_time;
 	}
 	
+	//change le score d'un commentaire
+	public void change_score() {
+		this.score = 10 + this.actual_time.compareTo(this.ts);
+	}	
+	
+	@Override
+	public String toString() {
+		return "Comment [id=" + id_comment + ", id_replied=" + id_replied + ", id_post=" + id_post + ", id_user=" + id_user
+				+ ", ts=" + ts + ", score=" + score + "]";
+	}
 	
 	
-	public Integer getId_comment() {
+	public Long getId_comment() {
 		return id_comment;
 	}
 
-	public void setId_comment(Integer id_comment) {
+	public void setId_comment(Long id_comment) {
 		this.id_comment = id_comment;
 	}
 
@@ -48,31 +53,29 @@ public class Comment{
 		this.ts = ts;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id_comment;
 	}
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id_comment = id;
 	}
-	public Integer getId_replied() {
+	public Long getId_replied() {
 		return id_replied;
 	}
-	public void setId_replied(Integer id_replied) {
+	public void setId_replied(Long id_replied) {
 		this.id_replied = id_replied;
 	}
-	public Integer getId_post() {
+	public Long getId_post() {
 		return id_post;
 	}
-	public void setId_post(Integer id_post) {
+	public void setId_post(Long id_post) {
 		this.id_post = id_post;
 	}
-	public Integer getId_user() {
+	public Long getId_user() {
 		return id_user;
 	}
-	public void setId_user(Integer id_user) {
+	public void setId_user(Long id_user) {
 		this.id_user = id_user;
 	}
-	public void change_score() {
-		this.score = 10 + this.actual_time.compareTo(this.ts);
-	}	
+	
 }
