@@ -40,20 +40,29 @@ public class Consumers implements Runnable {
 
 	public void run() {
 		// TODO Auto-generated method stub
-		while (!producer_end || !post_queue.isEmpty() || !comm_queue.isEmpty()) {
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		while (post_queue.peek() != "*") {
 			if (total_queue.remainingCapacity() != 0) {
 				try {
-					if(post_queue.isEmpty() && !comm_queue.isEmpty()) {
+					if(!post_queue.isEmpty() && comm_queue.isEmpty()) {
 						Post post;
 						post = new Post(post_queue.take(), total_time, IDPost2Com);
 						total_queue.put(post);
 						total_time = post.getTs();
+						System.out.println("date du post " + total_time + " " + post.getTs());
 						continue;
 					}
-					if(!post_queue.isEmpty() && comm_queue.isEmpty()) {
+					if(post_queue.isEmpty() && !comm_queue.isEmpty()) {
 						Comment com = new Comment(this.comm_queue.take(), total_time);
 						total_queue.put(com);
 						total_time = com.getTs();
+						System.out.println("date du comm " + total_time + " " + com.getTs());
 						continue;
 					}
 					String[] string_post = post_queue.peek().split("[|]");
@@ -81,17 +90,26 @@ public class Consumers implements Runnable {
 					e.printStackTrace();
 				}
 			}
-			else {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
+			//System.out.println("la taille de post_queue est : "+ post_queue.size());
+			//System.out.println("la taille de comm_queue est : "+ comm_queue.size());
+		
 		}
-		consumers_end=true;
+		//consumers_end=true;
+		System.out.println("la production est finie");
+		try {
+			total_queue.put("*");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

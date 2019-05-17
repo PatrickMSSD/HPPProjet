@@ -66,9 +66,13 @@ public class Producer implements Runnable{
 				this.liste2.put(line2);
 				
 			}
+			System.out.println("on produit");
+			Thread.sleep(5);
+			
 		}
 		br.close();
 		br2.close();
+		liste.put("*");
 		
 		producer_end=true;
 	}
