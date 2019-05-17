@@ -28,8 +28,8 @@ public class my_project {
 		BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(110);
 		BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(110);
 
-		Producer prod_post = new Producer(post_queue, "../HPPProjet/resourses/posts.dat");
-		Producer prod_comm = new Producer(comm_queue, "../HPPProjet/resourses/comments.dat");
+		Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/posts.dat","../HPPProjet/resourses/comments.dat");
+		//Producer comm = new Producer(comm_queue,"../HPPProjet/resourses/comments.dat");
 		
 		ArrayList<Comment> comment_list = new ArrayList<Comment>();
 		ArrayList<Post> post_list = new ArrayList<Post>();
@@ -40,10 +40,10 @@ public class my_project {
 		
 		List<Post> result = new ArrayList<Post>(ID2Post.values());
 		
-		Thread prodpost = new Thread(prod_post);
+		Thread prodpost = new Thread(prod);
 		prodpost.start();
-		Thread prodcom = new Thread(prod_comm);
-		prodcom.start();
+		//Thread prodcomm = new Thread(comm);
+		//prodcomm.start();
 		
 		Consumers my_consumers = new Consumers(post_queue, comm_queue, total_queue, total_time, comment_list, post_list, IDPost2Com);
 		Thread consumers_thread= new Thread(my_consumers);
