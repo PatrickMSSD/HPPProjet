@@ -76,18 +76,20 @@ public class ConsumerQueue2Sort implements Runnable {
 			e1.printStackTrace();
 		}
 		while (total_queue.peek() != "*") {
-			//if (!total_queue.isEmpty()) {
+				//System.out.println(total_queue.peek().getClass());
 				System.out.println("dans le if");
 				if (total_queue.peek().getClass().equals(Post.class)) {
 					Post patchPost = null;
 					try {
 						patchPost = (Post) total_queue.take();
+						//System.out.println(patchPost.toString());
+						//System.out.println(patchPost.getTs());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					IDPost2Com.put(patchPost.post_id, new ArrayList<Comment>());
-					System.out.println(IDPost2Com.keySet().toString());
-					ID2Post.put(patchPost.post_id, patchPost);
+					IDPost2Com.put(patchPost.getPost_id(), new ArrayList<Comment>());
+					//System.out.println(IDPost2Com.keySet().toString());
+					ID2Post.put(patchPost.getPost_id(), patchPost);
 				} else {
 					Comment patchComment = null;
 					try {
@@ -97,17 +99,16 @@ public class ConsumerQueue2Sort implements Runnable {
 					}
 					
 
-					if (patchComment.getId_post() > 0 ) {
-						System.out.println(patchComment.getId_post());
-						
+					if (patchComment.getId_post() != 0 ) {
+						IDCom2IDPost.put(patchComment.getId_comment(), patchComment.getId_post());
 						IDPost2Com.get(patchComment.getId_post()).add(patchComment);
-						IDCom2IDPost.put(patchComment.id_comment, patchComment.id_post);
-						ID2Post.get(patchComment.id_post).setLastCom(patchComment);
+						ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
+						
 					} else {
 
-						IDPost2Com.get(IDCom2IDPost.get(patchComment.id_replied)).add(patchComment);
-						IDCom2IDPost.put(patchComment.id_comment, IDCom2IDPost.get(patchComment.id_replied));
-						ID2Post.get(IDCom2IDPost.get(patchComment.id_replied)).setLastCom(patchComment);
+						IDPost2Com.get(IDCom2IDPost.get(patchComment.getId_replied())).add(patchComment);
+						IDCom2IDPost.put(patchComment.getId_comment(), IDCom2IDPost.get(patchComment.getId_replied()));
+						ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
 					}
 
 				}
@@ -117,7 +118,6 @@ public class ConsumerQueue2Sort implements Runnable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			//}
 			try {
 				Thread.sleep(15);
 			} catch (InterruptedException e) {
@@ -125,7 +125,6 @@ public class ConsumerQueue2Sort implements Runnable {
 				e.printStackTrace();
 			}
 
-			// System.out.println("la taille de total queue est : " + total_queue.size());
 		}
 
 		// System.out.println("test ko " +consumers_end);

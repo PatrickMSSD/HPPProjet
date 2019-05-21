@@ -4,13 +4,13 @@ import java.sql.Timestamp;
 
 public class Comment{
 	
-	Long id_comment;
-	Long id_replied;
-	Long id_post;
-	Long id_user;
-	Timestamp ts;
-	Timestamp actual_time;
-	Integer score;
+	private Long id_comment;
+	private Long id_replied;
+	private Long id_post;
+	private Long id_user;
+	private Timestamp ts;
+	private Timestamp actual_time;
+	private Integer score;
 	
 	public Comment(String comment,Timestamp actual_time) {
 		super();

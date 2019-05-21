@@ -77,11 +77,13 @@ public class Consumers implements Runnable {
 						post = new Post(post_queue.take(), total_time, IDPost2Com);
 						total_queue.put(post);
 						total_time = post.getTs();
+						//System.out.println("conumer post : "+post.toString());
 						System.out.println("date " + total_time + " " + post.getTs());
 					} else {
 						Comment com = new Comment(this.comm_queue.take(), total_time);
 						total_queue.put(com);
 						total_time = com.getTs();
+						//System.out.println("consumer comment : "+ com.toString());
 						System.out.println("date " + total_time + " " + com.getTs());
 					}
 					 }
