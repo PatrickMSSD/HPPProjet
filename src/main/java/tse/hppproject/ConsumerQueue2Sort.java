@@ -6,26 +6,25 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class ConsumerQueue2Sort implements Runnable {
 
-	Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>();
-	Map<Long, Post> ID2Post = new HashMap<Long, Post>();
-	Map<Long, Long> IDCom2IDPost = new HashMap<Long, Long>();
-	BlockingQueue<Object> total_queue;
+	Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
+	Map<Long, Post> ID2Post = new HashMap<Long, Post>(1000000);
+	Map<Long, Long> IDCom2IDPost = new HashMap<Long, Long>(1000000);
+	BlockingQueue<Object> total_queue= new ArrayBlockingQueue<Object>(1000000);
 	List<Post> result;
-	Boolean consumers_end;
 
 	public ConsumerQueue2Sort(Map<Long, ArrayList<Comment>> iDPost2Com, Map<Long, Post> iD2Post,
-			Map<Long, Long> iDCom2IDPost, BlockingQueue<Object> total_queue, List<Post> result, Boolean consumers_end) {
+			Map<Long, Long> iDCom2IDPost, BlockingQueue<Object> total_queue, List<Post> result) {
 		super();
 		IDPost2Com = iDPost2Com;
 		ID2Post = iD2Post;
 		IDCom2IDPost = iDCom2IDPost;
 		this.total_queue = total_queue;
 		this.result = result;
-		this.consumers_end = consumers_end;
 	}
 
 	public Map<Long, ArrayList<Comment>> getIDPost2Com() {
@@ -69,77 +68,92 @@ public class ConsumerQueue2Sort implements Runnable {
 	}
 
 	public void run() {
+		
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		treatment();
+	}
+
+	public void treatment() {
 		while (total_queue.peek() != "*") {
-				//System.out.println(total_queue.peek().getClass());
-				System.out.println("dans le if");
+			if (!total_queue.isEmpty()) {
+				
 				if (total_queue.peek().getClass().equals(Post.class)) {
-					Post patchPost = null;
+					Post patchPost=null;
 					try {
 						patchPost = (Post) total_queue.take();
-						//System.out.println(patchPost.toString());
-						//System.out.println(patchPost.getTs());
+						System.out.println("etape 3"+ patchPost.getTs() );
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					IDPost2Com.put(patchPost.getPost_id(), new ArrayList<Comment>());
-					//System.out.println(IDPost2Com.keySet().toString());
+					IDPost2Com.put(patchPost.getPost_id(), null);
 					ID2Post.put(patchPost.getPost_id(), patchPost);
+					result.add(patchPost);
 				} else {
 					Comment patchComment = null;
 					try {
 						patchComment = (Comment) total_queue.take();
+						System.out.println("etape 3"+ patchComment.getTs());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					
 
-					if (patchComment.getId_post() != 0 ) {
+					if (patchComment.getId_post() > 0) {
 						IDCom2IDPost.put(patchComment.getId_comment(), patchComment.getId_post());
+						IDPost2Com.replace(patchComment.getId_post(), new ArrayList<Comment>());
 						IDPost2Com.get(patchComment.getId_post()).add(patchComment);
-						ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
-						
+						//ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
+
 					} else {
 
 						IDPost2Com.get(IDCom2IDPost.get(patchComment.getId_replied())).add(patchComment);
 						IDCom2IDPost.put(patchComment.getId_comment(), IDCom2IDPost.get(patchComment.getId_replied()));
-						ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
+						//ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
 					}
 
 				}
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			try {
-				Thread.sleep(15);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				calcul_score();
+				//System.out.println("this is the end");
+				
 			}
-
+			//result = new ArrayList<Post>(ID2Post.values());
+			Collections.sort(result, new Comparator<Post>() {
+				public int compare(Post p1, Post p2) {
+					if (p1.getScore_total() != p2.getScore_total()) {
+						return p2.getScore_total().compareTo(p1.getScore_total());
+					}
+					if (p1.getTs() != p2.getTs()) {
+						return p1.getTs().compareTo(p2.getTs());
+					}
+					return p1.getLastCom().getTs().compareTo(p2.getLastCom().getTs());
+				}
+			});
+			
 		}
+		System.out.println(result.toString());
+	}
+	void calcul_score() {
 
-		// System.out.println("test ko " +consumers_end);
-		result = new ArrayList<Post>(ID2Post.values());
-		Collections.sort(result, new Comparator<Post>() {
-			public int compare(Post p1, Post p2) {
-				if (p2.getScore_total() != p1.getScore_total()) {
-					return p2.getScore_total().compareTo(p1.getScore_total());
+		for (Long id_post : this.ID2Post.keySet()) {
+			this.ID2Post.get(id_post).change_score();
+			this.ID2Post.get(id_post).change_total_score();
+			if (this.ID2Post.get(id_post).getScore_total() <= 0) {
+				this.ID2Post.remove(id_post);
+				for (Comment com : this.IDPost2Com.get(id_post)) {
+					this.IDCom2IDPost.remove(com.getId_comment());
 				}
-				if (p2.getTs() != p1.getTs()) {
-					return p1.getTs().compareTo(p2.getTs());
-				}
-				return p1.getLastCom().getTs().compareTo(p2.getLastCom().getTs());
+				this.IDPost2Com.remove(id_post);
 			}
-		});
+			
+			while(result.get(result.size()-1).getScore_total()==0) {
+				result.remove(result.size()-1);
+			}
+		}
 
 	}
 

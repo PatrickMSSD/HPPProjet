@@ -10,19 +10,19 @@ import java.util.concurrent.BlockingQueue;
 public class Consumers implements Runnable {
 	private Object syncObj = new Object();
 
-	private BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(110);
-	private BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(110);
-	private BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(110);
-	
-	private Timestamp total_time;
-	
+	private BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(1000000);
+	private BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(1000000);
+	private BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(1000000);
+
+	private String total_time;
+
 	private Boolean producer_end;
 	private Boolean consumers_end;
-	
-	private Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>();
+
+	private Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
 
 	public Consumers(BlockingQueue<String> post_queue, BlockingQueue<String> comm_queue,
-			BlockingQueue<Object> total_queue, Timestamp total_time, Boolean producer_end, Boolean consumers_end,
+			BlockingQueue<Object> total_queue, String total_time, Boolean producer_end, Boolean consumers_end,
 			Map<Long, ArrayList<Comment>> iDPost2Com) {
 		super();
 		this.post_queue = post_queue;
@@ -34,8 +34,74 @@ public class Consumers implements Runnable {
 		IDPost2Com = iDPost2Com;
 	}
 
-	Timestamp getTotalTime() {
+	String getTotalTime() {
 		return total_time;
+	}
+
+	public void treatment() {
+		while (post_queue.peek() != "*" && !comm_queue.isEmpty()) {
+			if (total_queue.remainingCapacity() != 0) {
+				try {
+
+					if (!post_queue.isEmpty() && comm_queue.isEmpty()) {
+						System.out.println("sgsgsgsg"+post_queue.peek());
+						Post post = new Post(post_queue.take(), total_time, IDPost2Com);
+						total_queue.put(post);
+						total_time = post.getTs();
+						// System.out.println("le post " + post.toString());
+						System.out.println("etape 2 " + post.getTs());
+						continue;
+					}
+					if (post_queue.isEmpty() && !comm_queue.isEmpty()) {
+						Comment com = new Comment(this.comm_queue.take(), total_time);
+						total_queue.put(com);
+						total_time = com.getTs();
+						// System.out.println("le com" + com.toString());
+						System.out.println("etape 2 " + com.getTs());
+						continue;
+					}
+					if (!post_queue.isEmpty() && !comm_queue.isEmpty()) {
+						String[] string_post = post_queue.peek().split("[|]");
+						System.out.println("dfghdfhd"+post_queue.peek());
+						String[] string_comment = comm_queue.peek().split("[|]");
+						String post_time = string_post[0].substring(0, string_post[0].indexOf(".")).replaceAll("T",
+								" ");
+						String comment_time = string_comment[0].substring(0, string_comment[0].indexOf("."))
+								.replaceAll("T", " ");
+						if (post_time.compareTo(comment_time) < 0) {
+							// System.out.println(this.post_queue.peek());
+							Post post = new Post(post_queue.take(), total_time, IDPost2Com);
+							total_queue.put(post);
+							total_time = post.getTs();
+							// System.out.println("le post " + post.toString());
+							System.out.println("etape 2 " + post.getTs());
+
+						} else {
+							// System.out.println(this.comm_queue.take());
+							Comment com = new Comment(this.comm_queue.take(), total_time);
+							total_queue.put(com);
+							total_time = com.getTs();
+							// System.out.println("le com" + com.toString());
+							System.out.println("etape 2 " + com.getTs());
+						}
+						continue;
+					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+			System.out.println(total_queue.toString());
+		}
+
+		System.out.println("la conso est finie");
+		try {
+			total_queue.put("*");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void run() {
@@ -46,72 +112,9 @@ public class Consumers implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		while (post_queue.peek() != "*") {
-			if (total_queue.remainingCapacity() != 0) {
-				try {
-					if(!post_queue.isEmpty() && comm_queue.isEmpty()) {
-						Post post;
-						post = new Post(post_queue.take(), total_time, IDPost2Com);
-						total_queue.put(post);
-						total_time = post.getTs();
-						System.out.println("date du post " + total_time + " " + post.getTs());
-						continue;
-					}
-					if(post_queue.isEmpty() && !comm_queue.isEmpty()) {
-						Comment com = new Comment(this.comm_queue.take(), total_time);
-						total_queue.put(com);
-						total_time = com.getTs();
-						System.out.println("date du comm " + total_time + " " + com.getTs());
-						continue;
-					}
-					String[] string_post = post_queue.peek().split("[|]");
-					String[] string_comment = comm_queue.peek().split("[|]");
-					Timestamp post_time = Timestamp
-							.valueOf(string_post[0].substring(0, string_post[0].indexOf(".")).replaceAll("T", " "));
-					Timestamp comment_time = Timestamp.valueOf(
-							string_comment[0].substring(0, string_comment[0].indexOf(".")).replaceAll("T", " "));
-					synchronized (syncObj) {
-					if (post_time.before(comment_time)) {
-						Post post;
-						post = new Post(post_queue.take(), total_time, IDPost2Com);
-						total_queue.put(post);
-						total_time = post.getTs();
-						//System.out.println("conumer post : "+post.toString());
-						System.out.println("date " + total_time + " " + post.getTs());
-					} else {
-						Comment com = new Comment(this.comm_queue.take(), total_time);
-						total_queue.put(com);
-						total_time = com.getTs();
-						//System.out.println("consumer comment : "+ com.toString());
-						System.out.println("date " + total_time + " " + com.getTs());
-					}
-					 }
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			//System.out.println("la taille de post_queue est : "+ post_queue.size());
-			//System.out.println("la taille de comm_queue est : "+ comm_queue.size());
-		
-		}
-		//consumers_end=true;
-		System.out.println("la production est finie");
-		try {
-			total_queue.put("*");
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		treatment();
+
 	}
-	
+
 }

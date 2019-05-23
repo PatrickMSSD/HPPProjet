@@ -9,21 +9,24 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
+
 import producers.Producer;
 
 public class my_project {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+		System.out.println(new java.util.Date().getTime());
 
 		//temps actuel correspondant au dernier post ou commentaire traité
-		Timestamp total_time = new Timestamp(0);
+		String total_time = "";
 
 		//Lien entre Produceur et Consumers
-		BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(110);
-		BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(110);
+		BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(1000000);
+		BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(1000000);
 		
 		//Lien entre Consumers et ConsumerQueue2Sort
-		BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(110);
+		BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(1000000);
 		
 		//Indique si la production est terminée
 		Boolean producer_end=false;
@@ -38,26 +41,27 @@ public class my_project {
 		
 		List<Post> result = new ArrayList<Post>(ID2Post.values());
 		
-		Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/posts.dat","../HPPProjet/resourses/comments.dat",producer_end);
+		Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/post_short","../HPPProjet/resourses/comment_short");
 		Thread prodpost = new Thread(prod);
 		prodpost.start();
 		
 		Consumers my_consumers = new Consumers(post_queue, comm_queue, total_queue, total_time,producer_end,consumers_end, IDPost2Com);
 		Thread consumers_thread= new Thread(my_consumers);
 		
-		ConsumerQueue2Sort my_consumersQueue = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result,consumers_end);
+		ConsumerQueue2Sort my_consumersQueue = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
 		Thread consumersQueue_thread= new Thread(my_consumersQueue);
+		
+		ConsumerQueue2Sort my_consumersQueue2 = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
+		Thread consumersQueue_thread2= new Thread(my_consumersQueue);
 		
 		consumers_thread.start();
 		consumersQueue_thread.start();
 		
-		consumers_thread.join();
+		//consumers_thread.join();
+		if(!prodpost.isAlive())
+			consumersQueue_thread2.start();
 		consumersQueue_thread.join();
-		
-		System.out.println(total_queue.toString());
-		System.out.println(result.toString());
-		
-
 	
+		System.out.println(new java.util.Date().getTime());
 	}
 }
