@@ -84,7 +84,7 @@ public class ConsumerQueue2Sort implements Runnable {
 				if (total_queue.peek().getClass().equals(Post.class)) {
 					try {
 						Post patchPost = (Post) total_queue.take();
-						System.out.println("ETAPE 3" + patchPost.getTs());
+						//System.out.println("ETAPE 3" + patchPost.getTs());
 						IDPost2Com.put(patchPost.getPost_id(), null);
 						ID2Post.put(patchPost.getPost_id(), patchPost);
 						result.add(patchPost);
@@ -95,19 +95,26 @@ public class ConsumerQueue2Sort implements Runnable {
 				} else {
 					try {
 						Comment patchComment = (Comment) total_queue.take();
-						System.out.println("ETAPE 3 " + patchComment.getTs());
+						//System.out.println("ETAPE 3 " + patchComment.getTs());
 						if (patchComment.getId_post() > 0) {
 							IDCom2IDPost.put(patchComment.getId_comment(), patchComment.getId_post());
 							IDPost2Com.replace(patchComment.getId_post(), new ArrayList<Comment>());
 							IDPost2Com.get(patchComment.getId_post()).add(patchComment);
-							//ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
-
+							if(ID2Post.get(patchComment.getId_post())!=null){
+							ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
+							}else {
+								patchComment=null;
+							}
 						} else {
 
 							IDPost2Com.get(IDCom2IDPost.get(patchComment.getId_replied())).add(patchComment);
 							IDCom2IDPost.put(patchComment.getId_comment(),
 									IDCom2IDPost.get(patchComment.getId_replied()));
-						    //ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
+							if(ID2Post.get(patchComment.getId_post())!=null){
+						    ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
+							}else {
+								patchComment=null;
+							}
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -115,13 +122,7 @@ public class ConsumerQueue2Sort implements Runnable {
 
 				}
 
-				
-				
-				//long startTime = System.nanoTime();
 				calcul_score();  
-				//long estimatedTime = System.nanoTime() - startTime;
-				//System.out.println("estimatedTime "+estimatedTime);
-				 
 				
 			}
 			  
@@ -131,24 +132,12 @@ public class ConsumerQueue2Sort implements Runnable {
 				
 			}
 			
-			/*Collections.sort(result, new Comparator<Post>() {
-				public int compare(Post p1, Post p2) {
-					if (p1.getScore_total() != p2.getScore_total()) {
-						return p2.getScore_total().compareTo(p1.getScore_total());
-					}
-					if (p1.getTs() != p2.getTs()) {
-						return p1.getTs().compareTo(p2.getTs());
-					}
-					return p1.getLastCom().getTs().compareTo(p2.getLastCom().getTs());
-				}
-			});*/
-
 		}
 		System.out.println("le resultat final est" + result.toString());
 	}
 
 	void calcul_score() {
-		
+
 		for (Long id_post : this.ID2Post.keySet()) {
 			this.ID2Post.get(id_post).change_total_score();
 			if (this.ID2Post.get(id_post).getScore_total() <= 0) {
@@ -157,19 +146,18 @@ public class ConsumerQueue2Sort implements Runnable {
 					for (Comment com : this.IDPost2Com.get(id_post)) {
 						this.IDCom2IDPost.remove(com.getId_comment());
 					}
-				this.IDPost2Com.remove(id_post);
+					this.IDPost2Com.remove(id_post);
 				}
 			}
-			
 
 		}
-		
+
 		if (result.size() - 1 > 0) {
 			while (result.get(result.size() - 1).getScore_total() == 0) {
 				result.remove(result.size() - 1);
 			}
 		}
-		
+
 	}
 
 }

@@ -62,7 +62,6 @@ public class Consumers implements Runnable {
 					}
 					if (!post_queue.isEmpty() && !comm_queue.isEmpty()) {
 						String[] string_post = post_queue.peek().split("[|]");
-						//System.out.println("dfghdfhd"+post_queue.peek());
 						String[] string_comment = comm_queue.peek().split("[|]");
 						String post_time = string_post[0].substring(0, string_post[0].indexOf(".")).replaceAll("T",
 								" ");

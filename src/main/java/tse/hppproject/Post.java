@@ -32,7 +32,7 @@ public class Post implements Comparable<Post>{
 	
 	//calcul le score total d'un post (post + ses commentaires)
 	public void change_total_score() {
-		this.score_total=this.ts.compareTo(this.actual_time)<10?0:10+this.actual_time.compareTo(this.ts);
+		this.score_total=this.ts.compareTo(this.actual_time)<-10?0:10+this.actual_time.compareTo(this.ts);
 		if(this.IDPost2Com.get(post_id)!= null) {
 		for(int i=0;i<this.IDPost2Com.get(post_id).size();i++) {
 			this.IDPost2Com.get(post_id).get(i).change_score();

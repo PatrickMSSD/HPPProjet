@@ -47,15 +47,16 @@ public class Producer implements Runnable {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		BufferedReader br2 = new BufferedReader(new FileReader(file2));
 		String line = null, line2 = null;
-		while ((((line = br.readLine()) != null) && (line2 = br2.readLine()) != null) || line != null
-				|| line2 != null) {
-
-			if (line != null)
+		while ((((line = br.readLine()) != null) && (line2 = br2.readLine()) != null)) {
 				this.liste.put(line);
-			if (line2 != null)
 				this.liste2.put(line2);
-
 		}
+		while((line = br.readLine()) != null) {
+			this.liste.put(line);
+		}
+		while((line2 = br2.readLine()) != null) {
+			this.liste2.put(line2);
+		}			
 		br.close();
 		br2.close();
 		liste.put("*");
