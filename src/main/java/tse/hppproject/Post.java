@@ -34,8 +34,10 @@ public class Post {
 	//calcul le score total d'un post (post + ses commentaires)
 	public void change_total_score() {
 		this.score_total=this.score;
+		if(this.IDPost2Com.get(post_id)!= null) {
 		for(int i=0;i<this.IDPost2Com.get(post_id).size();i++) {
 			this.score_total+=this.IDPost2Com.get(post_id).get(i).getScore();
+		}
 		}
 	}
 	

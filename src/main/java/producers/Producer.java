@@ -47,8 +47,7 @@ public class Producer implements Runnable {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		BufferedReader br2 = new BufferedReader(new FileReader(file2));
 		String line = null, line2 = null;
-		while (((line = br.readLine()) != null) || (line2 = br2.readLine()) != null) {
-			System.out.println("on produit");
+		while ((((line = br.readLine()) != null) && (line2 = br2.readLine()) != null) || line!=null ||line2!=null)  {
 			if(line !=null)
 			this.liste.put(line);
 			if(line2 !=null)
@@ -57,8 +56,6 @@ public class Producer implements Runnable {
 		br.close();
 		br2.close();
 		liste.put("*");
-		System.out.println(liste.toString());
-		System.out.println(liste2.toString());
 	}
 
 

@@ -1,15 +1,12 @@
 package tse.hppproject;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import producers.Producer;
 
@@ -41,7 +38,7 @@ public class my_project {
 		
 		List<Post> result = new ArrayList<Post>(ID2Post.values());
 		
-		Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/post_short","../HPPProjet/resourses/comment_short");
+		Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/posts.dat","../HPPProjet/resourses/comments.dat");
 		Thread prodpost = new Thread(prod);
 		prodpost.start();
 		
@@ -58,8 +55,8 @@ public class my_project {
 		consumersQueue_thread.start();
 		
 		//consumers_thread.join();
-		if(!prodpost.isAlive())
-			consumersQueue_thread2.start();
+		//if(!prodpost.isAlive())
+		//	consumersQueue_thread2.start();
 		consumersQueue_thread.join();
 	
 		System.out.println(new java.util.Date().getTime());

@@ -14,7 +14,7 @@ public class ConsumerQueue2Sort implements Runnable {
 	Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
 	Map<Long, Post> ID2Post = new HashMap<Long, Post>(1000000);
 	Map<Long, Long> IDCom2IDPost = new HashMap<Long, Long>(1000000);
-	BlockingQueue<Object> total_queue= new ArrayBlockingQueue<Object>(1000000);
+	BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(1000000);
 	List<Post> result;
 
 	public ConsumerQueue2Sort(Map<Long, ArrayList<Comment>> iDPost2Com, Map<Long, Post> iD2Post,
@@ -68,7 +68,7 @@ public class ConsumerQueue2Sort implements Runnable {
 	}
 
 	public void run() {
-		
+
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e1) {
@@ -81,12 +81,12 @@ public class ConsumerQueue2Sort implements Runnable {
 	public void treatment() {
 		while (total_queue.peek() != "*") {
 			if (!total_queue.isEmpty()) {
-				
+
 				if (total_queue.peek().getClass().equals(Post.class)) {
-					Post patchPost=null;
+					Post patchPost = null;
 					try {
 						patchPost = (Post) total_queue.take();
-						System.out.println("etape 3"+ patchPost.getTs() );
+						System.out.println("ETAPE 3" + patchPost.getTs());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -97,7 +97,7 @@ public class ConsumerQueue2Sort implements Runnable {
 					Comment patchComment = null;
 					try {
 						patchComment = (Comment) total_queue.take();
-						System.out.println("etape 3"+ patchComment.getTs());
+						System.out.println("ETAPE 3 " + patchComment.getTs());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -106,22 +106,23 @@ public class ConsumerQueue2Sort implements Runnable {
 						IDCom2IDPost.put(patchComment.getId_comment(), patchComment.getId_post());
 						IDPost2Com.replace(patchComment.getId_post(), new ArrayList<Comment>());
 						IDPost2Com.get(patchComment.getId_post()).add(patchComment);
-						//ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
+						// ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
 
 					} else {
 
 						IDPost2Com.get(IDCom2IDPost.get(patchComment.getId_replied())).add(patchComment);
 						IDCom2IDPost.put(patchComment.getId_comment(), IDCom2IDPost.get(patchComment.getId_replied()));
-						//ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
+						// ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
 					}
 
 				}
-				
+
 				calcul_score();
-				//System.out.println("this is the end");
-				
+				// System.out.println("this is the end");
+
 			}
-			//result = new ArrayList<Post>(ID2Post.values());
+			// result = new ArrayList<Post>(ID2Post.values());
+			
 			Collections.sort(result, new Comparator<Post>() {
 				public int compare(Post p1, Post p2) {
 					if (p1.getScore_total() != p2.getScore_total()) {
@@ -134,9 +135,12 @@ public class ConsumerQueue2Sort implements Runnable {
 				}
 			});
 			
+			
+
 		}
-		System.out.println(result.toString());
+		System.out.println("le resultat final est" + result.toString());
 	}
+
 	void calcul_score() {
 
 		for (Long id_post : this.ID2Post.keySet()) {
@@ -144,17 +148,23 @@ public class ConsumerQueue2Sort implements Runnable {
 			this.ID2Post.get(id_post).change_total_score();
 			if (this.ID2Post.get(id_post).getScore_total() <= 0) {
 				this.ID2Post.remove(id_post);
-				for (Comment com : this.IDPost2Com.get(id_post)) {
-					this.IDCom2IDPost.remove(com.getId_comment());
+				if (this.IDPost2Com.get(id_post) != null) {
+					for (Comment com : this.IDPost2Com.get(id_post)) {
+						this.IDCom2IDPost.remove(com.getId_comment());
+					}
+					this.IDPost2Com.remove(id_post);
 				}
-				this.IDPost2Com.remove(id_post);
 			}
-			
-			while(result.get(result.size()-1).getScore_total()==0) {
-				result.remove(result.size()-1);
-			}
+
 		}
 
+		if (result.size()-1 > 0) {
+			//System.out.println("la taille de result est "+result.size());
+			//System.out.println(result.get(0).toString());
+			while (result.get(result.size() - 1).getScore_total() == 0) {
+				result.remove(result.size() - 1);
+			}
+		}
 	}
 
 }

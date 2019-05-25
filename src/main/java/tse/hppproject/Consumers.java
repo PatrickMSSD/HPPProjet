@@ -38,51 +38,45 @@ public class Consumers implements Runnable {
 		return total_time;
 	}
 
-	public void treatment() {
+	public void treatment() {		
 		while (post_queue.peek() != "*" && !comm_queue.isEmpty()) {
 			if (total_queue.remainingCapacity() != 0) {
 				try {
 
 					if (!post_queue.isEmpty() && comm_queue.isEmpty()) {
-						System.out.println("sgsgsgsg"+post_queue.peek());
+						
 						Post post = new Post(post_queue.take(), total_time, IDPost2Com);
 						total_queue.put(post);
 						total_time = post.getTs();
-						// System.out.println("le post " + post.toString());
-						System.out.println("etape 2 " + post.getTs());
+						//System.out.println("etape 2 " + post.getTs());
 						continue;
 					}
 					if (post_queue.isEmpty() && !comm_queue.isEmpty()) {
 						Comment com = new Comment(this.comm_queue.take(), total_time);
 						total_queue.put(com);
 						total_time = com.getTs();
-						// System.out.println("le com" + com.toString());
-						System.out.println("etape 2 " + com.getTs());
+						//System.out.println("etape 2 " + com.getTs());
 						continue;
 					}
 					if (!post_queue.isEmpty() && !comm_queue.isEmpty()) {
 						String[] string_post = post_queue.peek().split("[|]");
-						System.out.println("dfghdfhd"+post_queue.peek());
+						//System.out.println("dfghdfhd"+post_queue.peek());
 						String[] string_comment = comm_queue.peek().split("[|]");
 						String post_time = string_post[0].substring(0, string_post[0].indexOf(".")).replaceAll("T",
 								" ");
 						String comment_time = string_comment[0].substring(0, string_comment[0].indexOf("."))
 								.replaceAll("T", " ");
 						if (post_time.compareTo(comment_time) < 0) {
-							// System.out.println(this.post_queue.peek());
 							Post post = new Post(post_queue.take(), total_time, IDPost2Com);
 							total_queue.put(post);
 							total_time = post.getTs();
-							// System.out.println("le post " + post.toString());
-							System.out.println("etape 2 " + post.getTs());
+							//System.out.println("etape 2 " + post.getTs());
 
 						} else {
-							// System.out.println(this.comm_queue.take());
 							Comment com = new Comment(this.comm_queue.take(), total_time);
 							total_queue.put(com);
 							total_time = com.getTs();
-							// System.out.println("le com" + com.toString());
-							System.out.println("etape 2 " + com.getTs());
+							//System.out.println("etape 2 " + com.getTs());
 						}
 						continue;
 					}
@@ -92,7 +86,6 @@ public class Consumers implements Runnable {
 				}
 
 			}
-			System.out.println(total_queue.toString());
 		}
 
 		System.out.println("la conso est finie");
@@ -108,6 +101,7 @@ public class Consumers implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			Thread.sleep(10);
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
