@@ -81,49 +81,57 @@ public class ConsumerQueue2Sort implements Runnable {
 	public void treatment() {
 		while (total_queue.peek() != "*") {
 			if (!total_queue.isEmpty()) {
-
 				if (total_queue.peek().getClass().equals(Post.class)) {
-					Post patchPost = null;
 					try {
-						patchPost = (Post) total_queue.take();
+						Post patchPost = (Post) total_queue.take();
 						System.out.println("ETAPE 3" + patchPost.getTs());
+						IDPost2Com.put(patchPost.getPost_id(), null);
+						ID2Post.put(patchPost.getPost_id(), patchPost);
+						result.add(patchPost);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					IDPost2Com.put(patchPost.getPost_id(), null);
-					ID2Post.put(patchPost.getPost_id(), patchPost);
-					result.add(patchPost);
+
 				} else {
-					Comment patchComment = null;
 					try {
-						patchComment = (Comment) total_queue.take();
+						Comment patchComment = (Comment) total_queue.take();
 						System.out.println("ETAPE 3 " + patchComment.getTs());
+						if (patchComment.getId_post() > 0) {
+							IDCom2IDPost.put(patchComment.getId_comment(), patchComment.getId_post());
+							IDPost2Com.replace(patchComment.getId_post(), new ArrayList<Comment>());
+							IDPost2Com.get(patchComment.getId_post()).add(patchComment);
+							//ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
+
+						} else {
+
+							IDPost2Com.get(IDCom2IDPost.get(patchComment.getId_replied())).add(patchComment);
+							IDCom2IDPost.put(patchComment.getId_comment(),
+									IDCom2IDPost.get(patchComment.getId_replied()));
+						    //ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
+						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
-					}
-
-					if (patchComment.getId_post() > 0) {
-						IDCom2IDPost.put(patchComment.getId_comment(), patchComment.getId_post());
-						IDPost2Com.replace(patchComment.getId_post(), new ArrayList<Comment>());
-						IDPost2Com.get(patchComment.getId_post()).add(patchComment);
-						// ID2Post.get(patchComment.getId_post()).setLastCom(patchComment);
-
-					} else {
-
-						IDPost2Com.get(IDCom2IDPost.get(patchComment.getId_replied())).add(patchComment);
-						IDCom2IDPost.put(patchComment.getId_comment(), IDCom2IDPost.get(patchComment.getId_replied()));
-						// ID2Post.get(IDCom2IDPost.get(patchComment.getId_replied())).setLastCom(patchComment);
 					}
 
 				}
 
-				calcul_score();
-				// System.out.println("this is the end");
-
+				
+				
+				//long startTime = System.nanoTime();
+				calcul_score();  
+				//long estimatedTime = System.nanoTime() - startTime;
+				//System.out.println("estimatedTime "+estimatedTime);
+				 
+				
 			}
-			// result = new ArrayList<Post>(ID2Post.values());
+			  
+			for(int i=0;i<result.size()-1;i++) {
+				
+				result.get(i).compareTo(result.get(i+1));
+				
+			}
 			
-			Collections.sort(result, new Comparator<Post>() {
+			/*Collections.sort(result, new Comparator<Post>() {
 				public int compare(Post p1, Post p2) {
 					if (p1.getScore_total() != p2.getScore_total()) {
 						return p2.getScore_total().compareTo(p1.getScore_total());
@@ -133,18 +141,15 @@ public class ConsumerQueue2Sort implements Runnable {
 					}
 					return p1.getLastCom().getTs().compareTo(p2.getLastCom().getTs());
 				}
-			});
-			
-			
+			});*/
 
 		}
 		System.out.println("le resultat final est" + result.toString());
 	}
 
 	void calcul_score() {
-
+		
 		for (Long id_post : this.ID2Post.keySet()) {
-			this.ID2Post.get(id_post).change_score();
 			this.ID2Post.get(id_post).change_total_score();
 			if (this.ID2Post.get(id_post).getScore_total() <= 0) {
 				this.ID2Post.remove(id_post);
@@ -152,19 +157,19 @@ public class ConsumerQueue2Sort implements Runnable {
 					for (Comment com : this.IDPost2Com.get(id_post)) {
 						this.IDCom2IDPost.remove(com.getId_comment());
 					}
-					this.IDPost2Com.remove(id_post);
+				this.IDPost2Com.remove(id_post);
 				}
 			}
+			
 
 		}
-
-		if (result.size()-1 > 0) {
-			//System.out.println("la taille de result est "+result.size());
-			//System.out.println(result.get(0).toString());
+		
+		if (result.size() - 1 > 0) {
 			while (result.get(result.size() - 1).getScore_total() == 0) {
 				result.remove(result.size() - 1);
 			}
 		}
+		
 	}
 
 }

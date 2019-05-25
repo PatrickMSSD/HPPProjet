@@ -40,9 +40,10 @@ public class Consumers implements Runnable {
 
 	public void treatment() {		
 		while (post_queue.peek() != "*" && !comm_queue.isEmpty()) {
+			
 			if (total_queue.remainingCapacity() != 0) {
 				try {
-
+					
 					if (!post_queue.isEmpty() && comm_queue.isEmpty()) {
 						
 						Post post = new Post(post_queue.take(), total_time, IDPost2Com);
@@ -50,6 +51,7 @@ public class Consumers implements Runnable {
 						total_time = post.getTs();
 						//System.out.println("etape 2 " + post.getTs());
 						continue;
+						
 					}
 					if (post_queue.isEmpty() && !comm_queue.isEmpty()) {
 						Comment com = new Comment(this.comm_queue.take(), total_time);
@@ -78,14 +80,18 @@ public class Consumers implements Runnable {
 							total_time = com.getTs();
 							//System.out.println("etape 2 " + com.getTs());
 						}
+						
 						continue;
 					}
+					
+					
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
+			
 		}
 
 		System.out.println("la conso est finie");

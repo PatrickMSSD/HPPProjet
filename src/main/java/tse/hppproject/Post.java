@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Post {
+public class Post implements Comparable<Post>{
 	
 	private String ts;
 	private String actual_time;
 	private long post_id;
 	private long user_id;
 	private String user;
-	private int score =10;
 	private int score_total =0;
 	Comment lastCom;
 	
@@ -33,17 +32,17 @@ public class Post {
 	
 	//calcul le score total d'un post (post + ses commentaires)
 	public void change_total_score() {
-		this.score_total=this.score;
+		this.score_total=this.ts.compareTo(this.actual_time)<10?0:10+this.actual_time.compareTo(this.ts);
 		if(this.IDPost2Com.get(post_id)!= null) {
 		for(int i=0;i<this.IDPost2Com.get(post_id).size();i++) {
+			this.IDPost2Com.get(post_id).get(i).change_score();
+			if(this.IDPost2Com.get(post_id).get(i).getScore()>0) {
 			this.score_total+=this.IDPost2Com.get(post_id).get(i).getScore();
+			}else {
+				this.IDPost2Com.get(post_id).remove(i);
+			}
 		}
 		}
-	}
-	
-	//calcul le score du post (post seulement)
-	public void change_score() {
-		this.score=this.actual_time.compareTo(this.ts)<-10?0:10+this.actual_time.compareTo(this.ts);
 	}
 	
 	public Integer getScore_total() {
@@ -56,20 +55,9 @@ public class Post {
 	}
 	
 	
-	public Integer getScore() {
-		return score;
-	}
-
-
-	public void setScore(Integer score) {
-		this.score = score;
-	}
-
-
 	@Override
 	public String toString() {
-		return "Post [ts=" + ts + ", post_id=" + post_id + ", user_id=" + user_id + ", user=" + user + ", score="
-				+ score + ", score_total=" + score_total + "]";
+		return "Post [ts=" + ts + ", post_id=" + post_id + ", user_id=" + user_id + ", user=" + user + ", score_total=" + score_total + "]";
 	}
 
 	public String getTs() {
@@ -118,6 +106,16 @@ public class Post {
 	public void setUser(String user) {
 		this.user = user;
 	}
+
+	public int compareTo(Post o) {
+		// TODO Auto-generated method stub
+		if (this.getScore_total() != o.getScore_total()) {
+			return this.getScore_total().compareTo(o.getScore_total());
+		}
+		if (this.getTs() != o.getTs()) {
+			return this.getTs().compareTo(o.getTs());
+		}
+		return this.getLastCom().getTs().compareTo(o.getLastCom().getTs());
+	}
+	
 }
-
-

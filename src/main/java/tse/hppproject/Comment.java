@@ -27,7 +27,7 @@ public class Comment{
 	
 	//change le score d'un commentaire
 	public void change_score() {
-		this.setScore(10 + this.actual_time.compareTo(this.ts));
+		this.setScore(10 - this.ts.compareTo(this.actual_time));
 	}	
 	
 	@Override
