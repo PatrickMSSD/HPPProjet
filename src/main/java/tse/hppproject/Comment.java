@@ -8,8 +8,8 @@ public class Comment{
 	private long id_replied;
 	private long id_post;
 	private long id_user;
-	private Long ts;
-	private Long actual_time;
+	private long ts;
+	private long actual_time;
 	private int score;
 	
 	public Comment(String comment,long actual_time) {
@@ -27,7 +27,7 @@ public class Comment{
 	
 	//change le score d'un commentaire
 	public void change_score() {
-		this.setScore(10 + this.actual_time.compareTo(this.ts));
+		this.setScore((int) (10 - ((ts-actual_time)%240000)));
 	}	
 	
 	@Override

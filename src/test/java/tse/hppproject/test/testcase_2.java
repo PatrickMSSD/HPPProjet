@@ -44,7 +44,7 @@ public class testcase_2 {
 	
 	List<Post> result = new ArrayList<Post>();
 	
-	Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/posts.dat","../HPPProjet/resourses/comments.dat");
+	Producer prod = new Producer(post_queue,comm_queue,"../HPPProjet/resourses/posts_test2.dat","../HPPProjet/resourses/comments_test2.dat");
 	Thread prodpost = new Thread(prod);
 	
 	

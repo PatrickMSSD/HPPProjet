@@ -31,9 +31,9 @@ public class my_project {
 		Boolean consumers_end=false;
 		
 		//Tables de correspondances 
-		Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>();
-		Map<Long, Post> ID2Post = new HashMap<Long, Post>();
-		Map<Long, Long> IDCom2IDPost = new HashMap<Long, Long>();
+		Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
+		Map<Long, Post> ID2Post = new HashMap<Long, Post>(1000000);
+		Map<Long, Long> IDCom2IDPost = new HashMap<Long, Long>(1000000);
 		
 		
 		List<Post> result = new ArrayList<Post>(ID2Post.values());
@@ -42,21 +42,26 @@ public class my_project {
 		Thread prodpost = new Thread(prod);
 		prodpost.start();
 		
-		Consumers my_consumers = new Consumers(post_queue, comm_queue, total_queue, total_time,producer_end,consumers_end, IDPost2Com);
+		Consumers my_consumers = new Consumers(post_queue, comm_queue, total_queue, total_time, IDPost2Com);
 		Thread consumers_thread= new Thread(my_consumers);
 		
 		ConsumerQueue2Sort my_consumersQueue = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
 		Thread consumersQueue_thread= new Thread(my_consumersQueue);
 		
-		ConsumerQueue2Sort my_consumersQueue2 = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
+		/*ConsumerQueue2Sort my_consumersQueue2 = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
 		Thread consumersQueue_thread2= new Thread(my_consumersQueue);
+		
+		ConsumerQueue2Sort my_consumersQueue3 = new ConsumerQueue2Sort(IDPost2Com,ID2Post,IDCom2IDPost,total_queue,result);
+		Thread consumersQueue_thread3= new Thread(my_consumersQueue);*/
 		
 		consumers_thread.start();
 		consumersQueue_thread.start();
 		
-		//consumers_thread.join();
-		//if(!prodpost.isAlive())
-		//	consumersQueue_thread2.start();
+		consumers_thread.join();
+		/*if(!prodpost.isAlive())
+			consumersQueue_thread2.start();
+		if(!prodpost.isAlive())
+			consumersQueue_thread3.start();*/
 		consumersQueue_thread.join();
 	
 		System.out.println(new java.util.Date().getTime());

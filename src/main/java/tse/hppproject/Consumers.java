@@ -1,6 +1,5 @@
 package tse.hppproject;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,29 +7,22 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class Consumers implements Runnable {
-	private Object syncObj = new Object();
-
+	
 	private BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(1000000);
 	private BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(1000000);
 	private BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(1000000);
 
 	private long total_time;
 
-	private Boolean producer_end;
-	private Boolean consumers_end;
-
 	private Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
 
 	public Consumers(BlockingQueue<String> post_queue, BlockingQueue<String> comm_queue,
-			BlockingQueue<Object> total_queue, long total_time, Boolean producer_end, Boolean consumers_end,
-			Map<Long, ArrayList<Comment>> iDPost2Com) {
+			BlockingQueue<Object> total_queue, long total_time,Map<Long, ArrayList<Comment>> iDPost2Com) {
 		super();
 		this.post_queue = post_queue;
 		this.comm_queue = comm_queue;
 		this.total_queue = total_queue;
 		this.total_time = total_time;
-		this.producer_end = producer_end;
-		this.consumers_end = consumers_end;
 		IDPost2Com = iDPost2Com;
 	}
 
@@ -106,14 +98,11 @@ public class Consumers implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			Thread.sleep(10);
-			
+			treatment();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		treatment();
-
 	}
 
 }

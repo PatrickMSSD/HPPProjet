@@ -84,7 +84,7 @@ public class ConsumerQueue2Sort implements Runnable {
 				if (total_queue.peek().getClass().equals(Post.class)) {
 					try {
 						Post patchPost = (Post) total_queue.take();
-						//System.out.println("ETAPE 3" + patchPost.getTs());
+						System.out.println("ETAPE 3" + patchPost.getTs());
 						IDPost2Com.put(patchPost.getPost_id(), null);
 						ID2Post.put(patchPost.getPost_id(), patchPost);
 						result.add(patchPost);
@@ -122,7 +122,9 @@ public class ConsumerQueue2Sort implements Runnable {
 
 				}
 
+			
 				calcul_score();  
+				
 				
 			}
 			  
@@ -137,7 +139,7 @@ public class ConsumerQueue2Sort implements Runnable {
 	}
 
 	void calcul_score() {
-
+		
 		for (Long id_post : this.ID2Post.keySet()) {
 			this.ID2Post.get(id_post).change_total_score();
 			if (this.ID2Post.get(id_post).getScore_total() <= 0) {
@@ -146,17 +148,20 @@ public class ConsumerQueue2Sort implements Runnable {
 					for (Comment com : this.IDPost2Com.get(id_post)) {
 						this.IDCom2IDPost.remove(com.getId_comment());
 					}
-					this.IDPost2Com.remove(id_post);
 				}
+				this.IDPost2Com.remove(id_post);
 			}
+			
 
 		}
-
+		
+		
 		if (result.size() - 1 > 0) {
 			while (result.get(result.size() - 1).getScore_total() == 0) {
 				result.remove(result.size() - 1);
 			}
 		}
+		
 
 	}
 
