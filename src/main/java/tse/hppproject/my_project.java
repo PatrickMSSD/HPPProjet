@@ -16,7 +16,7 @@ public class my_project {
 		System.out.println(new java.util.Date().getTime());
 
 		//temps actuel correspondant au dernier post ou commentaire traité
-		String total_time = "";
+		long total_time = 0;
 
 		//Lien entre Produceur et Consumers
 		BlockingQueue<String> post_queue = new ArrayBlockingQueue<String>(1000000);

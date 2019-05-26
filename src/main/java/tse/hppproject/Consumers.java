@@ -14,7 +14,7 @@ public class Consumers implements Runnable {
 	private BlockingQueue<String> comm_queue = new ArrayBlockingQueue<String>(1000000);
 	private BlockingQueue<Object> total_queue = new ArrayBlockingQueue<Object>(1000000);
 
-	private String total_time;
+	private long total_time;
 
 	private Boolean producer_end;
 	private Boolean consumers_end;
@@ -22,7 +22,7 @@ public class Consumers implements Runnable {
 	private Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
 
 	public Consumers(BlockingQueue<String> post_queue, BlockingQueue<String> comm_queue,
-			BlockingQueue<Object> total_queue, String total_time, Boolean producer_end, Boolean consumers_end,
+			BlockingQueue<Object> total_queue, long total_time, Boolean producer_end, Boolean consumers_end,
 			Map<Long, ArrayList<Comment>> iDPost2Com) {
 		super();
 		this.post_queue = post_queue;
@@ -34,7 +34,7 @@ public class Consumers implements Runnable {
 		IDPost2Com = iDPost2Com;
 	}
 
-	String getTotalTime() {
+	long getTotalTime() {
 		return total_time;
 	}
 

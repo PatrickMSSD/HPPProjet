@@ -8,15 +8,15 @@ public class Comment{
 	private long id_replied;
 	private long id_post;
 	private long id_user;
-	private String ts;
-	private String actual_time;
+	private Long ts;
+	private Long actual_time;
 	private int score;
 	
-	public Comment(String comment,String actual_time) {
+	public Comment(String comment,long actual_time) {
 		super();
 		// TODO Auto-generated constructor stub
 		String[] coupe = comment.split("[|]");
-		this.ts = coupe[0].replace("T", " ").substring(0, coupe[0].indexOf("."));
+		this.ts = Long.parseLong(coupe[0].substring(0,coupe[0].indexOf(".")).replace("T", "").replace("-", "").replace(":", ""));
 		this.id_comment = Long.parseLong(coupe[1]);
 		this.id_post = (coupe.length == 7 ) ? Long.parseLong(coupe[6]) : 0;
 		this.id_replied=coupe[5].equals("")?0:Long.parseLong(coupe[5]);
@@ -45,11 +45,11 @@ public class Comment{
 		this.id_comment = id_comment;
 	}
 
-	public String getTs() {
+	public Long getTs() {
 		return ts;
 	}
 
-	public void setTs(String ts) {
+	public void setTs(long ts) {
 		this.ts = ts;
 	}
 

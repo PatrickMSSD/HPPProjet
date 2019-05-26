@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class Post implements Comparable<Post>{
 	
-	private String ts;
-	private String actual_time;
+	private Long ts;
+	private Long actual_time;
 	private long post_id;
 	private long user_id;
 	private String user;
@@ -18,11 +18,13 @@ public class Post implements Comparable<Post>{
 	//utilisation de la table de correspondance post list de commentaire pour compter le score
 	Map<Long, ArrayList<Comment>> IDPost2Com = new HashMap<Long, ArrayList<Comment>>(1000000);
 	
-	public Post(String str,String actual_time,Map<Long, ArrayList<Comment>> IDPost2Com) {
+	public Post(String str,long actual_time,Map<Long, ArrayList<Comment>> IDPost2Com) {
 		super();
 		this.actual_time=actual_time;
 		String[] string = str.split("[|]");
-		this.ts=string[0].substring(0,string[0].indexOf(".")).replaceAll("T", " ");
+		System.out.println(string[0]);
+		this.ts=Long.parseLong(string[0].substring(0,string[0].indexOf(".")).replace("T", "").replace("-", "").replace(":", "").replace(" ",""));
+		System.out.println(ts);
 		this.post_id=Long.parseLong(string[1]);
 		this.user_id=Long.parseLong(string[2]);
 		this.user=string[4];
@@ -60,7 +62,7 @@ public class Post implements Comparable<Post>{
 		return "Post [ts=" + ts + ", post_id=" + post_id + ", user_id=" + user_id + ", user=" + user + ", score_total=" + score_total + "]";
 	}
 
-	public String getTs() {
+	public Long getTs() {
 		return ts;
 	}
 
@@ -73,7 +75,7 @@ public class Post implements Comparable<Post>{
 		this.lastCom = lastCom;
 	}
 
-	public void setTs(String ts) {
+	public void setTs(long ts) {
 		this.ts = ts;
 	}
 
